@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Mail\WelcomeMail;
+use App\Exceptions\CustomeException;
 use App\Models\User;
 use App\Notifications\EmailVerifyNotification;
 use App\Traits\ManageFiles;
@@ -10,7 +10,6 @@ use Ichtrojan\Otp\Otp;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Mail;
 
 /**
  * Class StoreUserAction.
@@ -20,14 +19,11 @@ class StoreUserAction
     use ManageFiles;
 
 
-    public function execute(Request $request)
+    public function execute(Request $request):array
     {
         $cache = Cache::store('database');
         if ($cache->has("user_{$request->email}")) {
-            return response()->json([
-                'status' => 'false',
-                'message' => 'User already exists'
-            ], 400);
+            throw new CustomeException('User already exists', 400);
         }
 
         if ($request->hasFile('profile_photo')) {

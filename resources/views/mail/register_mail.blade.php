@@ -1,10 +1,11 @@
 <x-mail::message>
-    # Email Verification
+    Verify Your Email
 
     Thank you for signing up.
 
-    Your six-digit code is {{ $otp }}
+    Your OTP code is {{ $otp }}
 
+    This code is valid for 3 minutes.
     Thanks
     {{ config('app.name') }}
 

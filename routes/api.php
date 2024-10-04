@@ -20,6 +20,8 @@ Route::post('/login', [AuthController::class, 'login'])->name('login');
 
 Route::post('/send_code', [EmailVerificationController::class, 'sendOtp'])->name('sendOtp');
 
+Route::post('/verify', [EmailVerificationController::class, 'verifyEmail'])->name('verify');
+
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 });

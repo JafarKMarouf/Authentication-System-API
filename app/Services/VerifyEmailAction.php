@@ -6,6 +6,7 @@ use App\Exceptions\CustomeException;
 use App\Models\User;
 use Ichtrojan\Otp\Otp;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 /**
  * Class VerifyEmailAction.
@@ -17,16 +18,25 @@ class VerifyEmailAction
     {
         $this->otp = new Otp();
     }
+
     public function execute(Request $request)
     {
-        $valid = $this->otp->validate($request->email, $request->otp);
+        $cache = Cache::store('database');
 
-        if (!$valid->status) {
-            throw new CustomeException('OTP is invaild', 401);
+        $otp =  $cache->get($request->ip())[0] ?? null;
+        $email = $cache->get($request->ip())[1] ?? null;
+
+
+        if ($otp != $request->otp) {
+            throw new CustomeException('OTP is invalid', 401);
         }
-        $user = User::where('email', $request->email)->first();
-        $user->email_verified_at = now();
-        $user->save();
+
+        $user = User::where('email', $email)->update([
+            'email_verified_at' => now()
+        ]);
+
+        $cache->forget($request->ip());
+
         return $user;
     }
 }

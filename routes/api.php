@@ -2,6 +2,8 @@
 
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\EmailVerificationController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,13 +17,19 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::post('/register', [AuthController::class, 'register'])->name('register');
-Route::post('/login', [AuthController::class, 'login'])->name('login');
+Route::group(['prefix'  => 'auth'], function () {
+    Route::controller(AuthController::class)
+        ->group(function () {
+            Route::post('register', 'register')->name('register');
+            Route::post('login', 'login')->name('login');
+            Route::get('logout', 'logout')
+                ->middleware('auth:sanctum')
+                ->name('logout');
+        });
 
-Route::post('/send_code', [EmailVerificationController::class, 'sendOtp'])->name('sendOtp');
-
-Route::post('/verify', [EmailVerificationController::class, 'verifyEmail'])->name('verify');
-
-Route::middleware(['auth:sanctum'])->group(function () {
-    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+    Route::controller(EmailVerificationController::class)
+        ->group(function () {
+            Route::post('verify_email', 'verifyEmail')->name('verifyEmail');
+            Route::post('send_code', 'sendCode')->name('sendCode');
+        });
 });

@@ -4,8 +4,7 @@ namespace App\Services;
 
 use App\Models\User;
 use App\Notifications\ResetPasswordNotification;
-use Ichtrojan\Otp\Otp;
-use Illuminate\Auth\Notifications\ResetPassword;
+use App\Traits\SaveOtpInCache;
 use Illuminate\Http\Request;
 
 /**
@@ -13,14 +12,15 @@ use Illuminate\Http\Request;
  */
 class ForgetPasswordAction
 {
-    public function excetue(Request $request)
+    use SaveOtpInCache;
+
+    public function execute(Request $request)
     {
         $user = User::where('email', $request->email)->first();
 
-        $otp = new Otp;
-        $otp = $otp->generate($user->email, 'alpha_numeric', 6, 10);
+        $otp = $this->saveOtpInCache($request, $user->email, 10);
 
-        $user->notify(new ResetPasswordNotification($otp->token));
-        return $otp->token;
+        $user->notify(new ResetPasswordNotification($otp));
+        return $otp;
     }
 }

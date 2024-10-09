@@ -39,6 +39,7 @@ class ResetPasswordNotification extends Notification
             ->subject('Reset Password')
             ->markdown('mail.reset_password', [
                 'token' => $this->otp,
+                'username' => $notifiable->username,
             ]);
     }
 

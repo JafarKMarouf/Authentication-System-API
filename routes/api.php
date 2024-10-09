@@ -27,8 +27,11 @@ Route::group(['prefix'  => 'auth'], function () {
                 ->middleware('auth:sanctum')
                 ->name('logout');
         });
-    Route::post('forgetpassword', ForgetPasswordController::class);
-
+    Route::controller(ForgetPasswordController::class)
+        ->group(function () {
+            Route::post('forgetpassword', 'forgetPassword')->name('forget password');
+            Route::post('resetpassword', 'resetPassword')->name('reset password');
+        });
     Route::controller(EmailVerificationController::class)
         ->group(function () {
             Route::post('verify', 'verify')->name('verificationcode');

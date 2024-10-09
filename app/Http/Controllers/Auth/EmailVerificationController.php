@@ -5,22 +5,20 @@ namespace App\Http\Controllers\Auth;
 use App\Exceptions\CustomeException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EmailVerificationRequest;
-use App\Http\Requests\VerifyEmailRequest;
 use App\Services\EmailVerificationAction;
-use App\Services\SendOtpAction;
-use App\Services\VerifyEmailAction;
+use App\Services\ResendCodeAction;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class EmailVerificationController extends Controller
 {
-    public function resendCode(Request $request, SendOtpAction $sendOtpAction): JsonResponse
+    public function resendCode(Request $request, ResendCodeAction $action): JsonResponse
     {
         try {
-            $sendOtpAction->execute($request);
+            $action->execute($request);
             return response()->json([
                 'status' => true,
-                'message' => 'Sent Code OTP Successfully'
+                'message' => 'Resent Code OTP Successfully'
             ], 200);
         } catch (CustomeException $e) {
             return response()->json([
@@ -29,11 +27,11 @@ class EmailVerificationController extends Controller
             ], $e->getCustomCode());
         }
     }
-    public function verifyEmail(EmailVerificationRequest $request, EmailVerificationAction $emailVerificationAction): JsonResponse
+    public function verifyEmail(EmailVerificationRequest $request, EmailVerificationAction $action): JsonResponse
     {
         try {
             $request->validated();
-            $emailVerificationAction->execute($request);
+            $action->execute($request);
             return response()->json([
                 'status' => true,
                 'message' => 'Email Verified Successfully'

@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\User;
 use App\Notifications\EmailVerificationNotification;
 use App\Traits\ManageFiles;
+use App\Traits\SaveOtpInCache;
 use Ichtrojan\Otp\Otp;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -16,6 +17,7 @@ use Illuminate\Support\Facades\Hash;
 class StoreUserAction
 {
     use ManageFiles;
+    use SaveOtpInCache;
 
     public function execute(Request $request): array
     {
@@ -33,15 +35,9 @@ class StoreUserAction
             'profile_photo' => $photo
         ]);
 
-        //generate otp
-        $otp = new Otp;
-        $otp = $otp->generate($user->email, 'alpha_numeric', 6, 3);
+        $otp = $this->saveOtpInCache($request, $user->email);
 
-        // save otp token and email for user in cache table
-        $cache = Cache::store('database');
-        $cache->put($request->ip(), [$otp->token, $user->email]);
-
-        $user->notify(new EmailVerificationNotification($otp->token));
+        $user->notify(new EmailVerificationNotification($otp));
 
         $data['token'] = $user->createToken('register')->plainTextToken;
         $data['user'] = $user;

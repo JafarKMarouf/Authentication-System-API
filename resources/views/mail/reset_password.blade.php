@@ -1,7 +1,8 @@
 <x-mail::message>
-    Resetting Password
 
-    use the below code for reset password
+    Hello {{ $username }},
+
+    Please reset your password using the below code
 
     Your OTP code is {{ $token }}
 

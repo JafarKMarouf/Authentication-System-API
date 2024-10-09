@@ -3,15 +3,15 @@
 namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
-use Ichtrojan\Otp\Otp;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class EmailVerifyNotification extends Notification
+class ResetPasswordNotification extends Notification
 {
     use Queueable;
-
     private $otp;
+
     /**
      * Create a new notification instance.
      */
@@ -36,9 +36,9 @@ class EmailVerifyNotification extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject('Email Verification')
-            ->markdown('mail.register_mail', [
-                'otp' => $this->otp,
+            ->subject('Reset Password')
+            ->markdown('mail.reset_password', [
+                'token' => $this->otp,
             ]);
     }
 

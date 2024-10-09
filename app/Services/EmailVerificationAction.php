@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\Cache;
 /**
  * Class VerifyEmailAction.
  */
-class VerifyEmailAction
+class EmailVerificationAction
 {
     protected $otp;
     public function __construct()

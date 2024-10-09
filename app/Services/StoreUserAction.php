@@ -2,9 +2,8 @@
 
 namespace App\Services;
 
-use App\Exceptions\CustomeException;
 use App\Models\User;
-use App\Notifications\EmailVerifyNotification;
+use App\Notifications\EmailVerificationNotification;
 use App\Traits\ManageFiles;
 use Ichtrojan\Otp\Otp;
 use Illuminate\Http\Request;
@@ -42,7 +41,7 @@ class StoreUserAction
         $cache = Cache::store('database');
         $cache->put($request->ip(), [$otp->token, $user->email]);
 
-        $user->notify(new EmailVerifyNotification($otp->token));
+        $user->notify(new EmailVerificationNotification($otp->token));
 
         $data['token'] = $user->createToken('register')->plainTextToken;
         $data['user'] = $user;

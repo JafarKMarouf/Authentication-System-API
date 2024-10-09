@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\EmailVerificationController;
+use App\Http\Controllers\Auth\ForgetPasswordController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Route;
@@ -26,10 +27,11 @@ Route::group(['prefix'  => 'auth'], function () {
                 ->middleware('auth:sanctum')
                 ->name('logout');
         });
+    Route::post('forgetpassword', ForgetPasswordController::class);
 
     Route::controller(EmailVerificationController::class)
         ->group(function () {
-            Route::post('verify_email', 'verifyEmail')->name('verifyEmail');
-            Route::post('send_code', 'sendCode')->name('sendCode');
+            Route::post('verify', 'verify')->name('verificationcode');
+            Route::post('resend', 'resendCode')->name('sendCode');
         });
 });

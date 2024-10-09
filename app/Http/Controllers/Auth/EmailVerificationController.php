@@ -4,7 +4,9 @@ namespace App\Http\Controllers\Auth;
 
 use App\Exceptions\CustomeException;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\EmailVerificationRequest;
 use App\Http\Requests\VerifyEmailRequest;
+use App\Services\EmailVerificationAction;
 use App\Services\SendOtpAction;
 use App\Services\VerifyEmailAction;
 use Illuminate\Http\JsonResponse;
@@ -12,7 +14,7 @@ use Illuminate\Http\Request;
 
 class EmailVerificationController extends Controller
 {
-    public function sendCode(Request $request, SendOtpAction $sendOtpAction): JsonResponse
+    public function resendCode(Request $request, SendOtpAction $sendOtpAction): JsonResponse
     {
         try {
             $sendOtpAction->execute($request);
@@ -27,11 +29,11 @@ class EmailVerificationController extends Controller
             ], $e->getCustomCode());
         }
     }
-    public function verifyEmail(VerifyEmailRequest $request, VerifyEmailAction $verifyEmailAction): JsonResponse
+    public function verifyEmail(EmailVerificationRequest $request, EmailVerificationAction $emailVerificationAction): JsonResponse
     {
         try {
             $request->validated();
-            $verifyEmailAction->execute($request);
+            $emailVerificationAction->execute($request);
             return response()->json([
                 'status' => true,
                 'message' => 'Email Verified Successfully'

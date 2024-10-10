@@ -3,11 +3,11 @@
 namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
-use Ichtrojan\Otp\Otp;
+
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class EmailVerifyNotification extends Notification
+class EmailVerificationNotification extends Notification
 {
     use Queueable;
 
@@ -15,9 +15,9 @@ class EmailVerifyNotification extends Notification
     /**
      * Create a new notification instance.
      */
-    public function __construct()
+    public function __construct($token)
     {
-        $this->otp = new Otp;
+        $this->otp = $token;
     }
 
     /**
@@ -35,14 +35,10 @@ class EmailVerifyNotification extends Notification
      */
     public function toMail(object $notifiable): MailMessage
     {
-        //generate otp
-        $otp = new Otp;
-        $otp = $otp->generate($notifiable->email, 'alpha_numeric', 6, 3);
-
         return (new MailMessage)
             ->subject('Email Verification')
             ->markdown('mail.register_mail', [
-                'otp' => $otp->token,
+                'otp' => $this->otp,
             ]);
     }
 

@@ -4,42 +4,45 @@ namespace App\Http\Controllers\Auth;
 
 use App\Exceptions\CustomeException;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\EmailVerificationRequest;
-use App\Services\EmailVerificationAction;
-use App\Services\ResendCodeAction;
+use App\Http\Requests\ForgetPasswordRequest;
+use App\Http\Requests\ResetPasswordRequest;
+use App\Services\ForgetPasswordAction;
+use App\Services\ResetPasswordAction;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-class EmailVerificationController extends Controller
+class ForgetPasswordController extends Controller
 {
-    public function resendCode(Request $request, ResendCodeAction $action): JsonResponse
-    {
-        try {
-            $action->execute($request);
-            return response()->json([
-                'status' => true,
-                'message' => 'Resent Code OTP Successfully'
-            ], 200);
-        } catch (CustomeException $e) {
-            return response()->json([
-                'status' => false,
-                'message' => $e->getMessage()
-            ], $e->getCustomCode());
-        }
-    }
-    public function verifyEmail(EmailVerificationRequest $request, EmailVerificationAction $action): JsonResponse
+    public function forgetPassword(ForgetPasswordRequest $request, ForgetPasswordAction $action): JsonResponse
     {
         try {
             $request->validated();
             $action->execute($request);
             return response()->json([
                 'status' => true,
-                'message' => 'Email Verified Successfully'
+                'message' => 'sent code to your email for reset password'
             ], 200);
         } catch (CustomeException $e) {
             return response()->json([
                 'status' => false,
-                'message' => $e->getMessage()
+                'message' => $e->getMessage(),
+            ], $e->getCustomCode());
+        }
+    }
+
+    public function resetPassword(ResetPasswordRequest $request, ResetPasswordAction $action)
+    {
+        try {
+            $request->validated();
+            $action->execute($request);
+            return response()->json([
+                'status' => true,
+                'message' => 'Your password has been reset'
+            ], 200);
+        } catch (CustomeException $e) {
+            return response()->json([
+                'status' => false,
+                'message' => $e->getMessage(),
             ], $e->getCustomCode());
         }
     }

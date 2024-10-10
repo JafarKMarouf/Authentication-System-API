@@ -2,6 +2,9 @@
 
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\EmailVerificationController;
+use App\Http\Controllers\Auth\ForgetPasswordController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -15,13 +18,26 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::post('/register', [AuthController::class, 'register'])->name('register');
-Route::post('/login', [AuthController::class, 'login'])->name('login');
+Route::group(['prefix'  => 'auth'], function () {
 
-Route::post('/send_code', [EmailVerificationController::class, 'sendOtp'])->name('sendOtp');
+    Route::controller(AuthController::class)
+        ->group(function () {
+            Route::post('register', 'register')->name('register');
+            Route::post('login', 'login')->name('login');
+            Route::get('logout', 'logout')
+                ->middleware('auth:sanctum')
+                ->name('logout');
+        });
 
-Route::post('/verify', [EmailVerificationController::class, 'verifyEmail'])->name('verify');
+    Route::controller(EmailVerificationController::class)
+        ->group(function () {
+            Route::post('verify-email', 'verifyEmail')->name('verificationcode');
+            Route::post('resend-code', 'resendCode')->name('sendCode');
+        });
 
-Route::middleware(['auth:sanctum'])->group(function () {
-    Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+    Route::controller(ForgetPasswordController::class)
+        ->group(function () {
+            Route::post('forgetpassword', 'forgetPassword')->name('forget password');
+            Route::post('resetpassword', 'resetPassword')->name('reset password');
+        });
 });

@@ -11,7 +11,6 @@ use App\Services\LoginUserAction;
 use App\Services\StoreUserAction;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Route;
 
 class AuthController extends Controller
 {

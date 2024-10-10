@@ -40,7 +40,7 @@ class AuthController extends Controller
             return response()->json([
                 'status' => true,
                 'data' => $data,
-                'message' => 'User Logged successfully'
+                'message' => 'OTP sent to your email for 2FA'
             ], 200);
         } catch (CustomeException $e) {
             return response()->json([

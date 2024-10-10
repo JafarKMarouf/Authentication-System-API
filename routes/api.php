@@ -3,6 +3,7 @@
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\EmailVerificationController;
 use App\Http\Controllers\Auth\ForgetPasswordController;
+use App\Http\Controllers\Auth\TwoFactoryAuthenticationController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Route;
@@ -33,6 +34,12 @@ Route::group(['prefix'  => 'auth'], function () {
         ->group(function () {
             Route::post('verify-email', 'verifyEmail')->name('verificationcode');
             Route::post('resend-code', 'resendCode')->name('sendCode');
+        });
+
+    Route::controller(TwoFactoryAuthenticationController::class)
+        ->group(function () {
+            Route::post('verify-2FA', 'verify2FAOTP')->name('verify2FAOTP');
+            Route::post('resend-2FA', 'resend2FAOTP')->name('resend2FAOTP');
         });
 
     Route::controller(ForgetPasswordController::class)

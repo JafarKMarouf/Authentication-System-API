@@ -4,16 +4,14 @@ namespace App\Services;
 
 use App\Exceptions\CustomeException;
 use App\Models\User;
-use Ichtrojan\Otp\Otp;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 
 /**
- * Class VerifyEmailAction.
+ * Class TwoFactoryAuthAction.
  */
-class EmailVerificationAction
+class VerifyTwoFactoryAuthAction
 {
-
     public function execute(Request $request)
     {
         $cache = Cache::store('database');
@@ -25,12 +23,13 @@ class EmailVerificationAction
             throw new CustomeException('OTP is invalid', 401);
         }
 
-        $user = User::where('email', $email)->update([
-            'email_verified_at' => now()
-        ]);
-
         $cache->forget($request->ip());
 
-        return $user;
+        $user = User::where('email', $email)->first();
+
+        $token = $user->createToken('token-name')->plainTextToken;
+        $data['token'] = $token;
+        $data['user'] = $user;
+        return $data;
     }
 }

@@ -18,6 +18,7 @@ class ResetPasswordAction
         $cache = Cache::store('database');
         $otp =  $cache->get($request->ip())[0] ?? null;
         $email = $cache->get($request->ip())[1] ?? null;
+
         if ($otp != $request->otp) {
             throw new CustomeException('OTP is invalid', 401);
         }

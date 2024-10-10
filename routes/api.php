@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::group(['prefix'  => 'auth'], function () {
+
     Route::controller(AuthController::class)
         ->group(function () {
             Route::post('register', 'register')->name('register');
@@ -27,14 +28,16 @@ Route::group(['prefix'  => 'auth'], function () {
                 ->middleware('auth:sanctum')
                 ->name('logout');
         });
+
+    Route::controller(EmailVerificationController::class)
+        ->group(function () {
+            Route::post('verify-email', 'verifyEmail')->name('verificationcode');
+            Route::post('resend-code', 'resendCode')->name('sendCode');
+        });
+
     Route::controller(ForgetPasswordController::class)
         ->group(function () {
             Route::post('forgetpassword', 'forgetPassword')->name('forget password');
             Route::post('resetpassword', 'resetPassword')->name('reset password');
-        });
-    Route::controller(EmailVerificationController::class)
-        ->group(function () {
-            Route::post('verify', 'verify')->name('verificationcode');
-            Route::post('resend', 'resendCode')->name('sendCode');
         });
 });

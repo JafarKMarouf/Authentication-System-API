@@ -1,6 +1,6 @@
 <x-mail::message>
 
-    Hello {{ $username }},
+    Hello {{ $username }}!
 
     This is your 2FA login verification code: {{ $token }}
 

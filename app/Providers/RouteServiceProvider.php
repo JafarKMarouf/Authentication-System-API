@@ -2,11 +2,15 @@
 
 namespace App\Providers;
 
+use App\Exceptions\CustomeException;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
+use Illuminate\Http\Exceptions\ThrottleRequestsException;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Route;
+use Throwable;
 
 class RouteServiceProvider extends ServiceProvider
 {
@@ -43,6 +47,14 @@ class RouteServiceProvider extends ServiceProvider
     {
         RateLimiter::for('api', function (Request $request) {
             return Limit::perMinute(60)->by($request->user()?->id ?: $request->ip());
+        });
+
+        RateLimiter::for('tenMinutes', function (Request $request) {
+            return Limit::perMinutes(10, 2)
+                ->by($request->user()?->id ?: $request->ip())
+                ->response(function () {
+                    throw new CustomeException('Too Many Attempts.', 429);
+                });
         });
     }
 }

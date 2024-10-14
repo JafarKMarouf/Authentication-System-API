@@ -10,7 +10,7 @@ class CustomeException extends Exception
 
     public function __construct($message, $customCode)
     {
-        parent::__construct($message, 422);
+        parent::__construct($message, $customCode);
 
         $this->custom_code = $customCode;
     }

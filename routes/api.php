@@ -33,7 +33,9 @@ Route::group(['prefix'  => 'auth'], function () {
     Route::controller(EmailVerificationController::class)
         ->group(function () {
             Route::post('verify-email', 'verifyEmail')->name('verificationcode');
-            Route::post('resend-code', 'resendCode')->name('sendCode');
+            Route::post('resend-code', 'resendCode')
+                ->middleware(['throttle:tenMinutes'])
+                ->name('sendCode');
         });
 
     Route::controller(TwoFactoryAuthenticationController::class)

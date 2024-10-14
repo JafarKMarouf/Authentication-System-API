@@ -3,15 +3,16 @@
 namespace App\Notifications;
 
 use Illuminate\Bus\Queueable;
-
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class EmailVerificationNotification extends Notification
+class ResendVerificationNotification extends Notification
 {
     use Queueable;
 
     private $otp;
+
     /**
      * Create a new notification instance.
      */
@@ -36,8 +37,8 @@ class EmailVerificationNotification extends Notification
     public function toMail(object $notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject('Email Verification')
-            ->markdown('mail.register_mail', [
+            ->subject('Resend Email Verification')
+            ->markdown('mail.resend_verification', [
                 'otp' => $this->otp,
                 'username' => $notifiable->username,
             ]);

@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\TokenAbility;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\EmailVerificationController;
 use App\Http\Controllers\Auth\ForgetPasswordController;
@@ -25,9 +26,15 @@ Route::group(['prefix'  => 'auth'], function () {
         ->group(function () {
             Route::post('register', 'register')->name('register');
             Route::post('login', 'login')->name('login');
-            Route::get('logout', 'logout')
-                ->middleware('auth:sanctum')
-                ->name('logout');
+
+            Route::middleware('auth:sanctum')->group(function () {
+                Route::get('logout', 'logout')
+                    ->name('logout');
+
+                Route::get('refresh-token', 'refreshToken')
+                    ->middleware('ability:' . TokenAbility::ISSUE_ACCESS_TOKEN->value)
+                    ->name('refreshToken');
+            });
         });
 
     Route::controller(EmailVerificationController::class)

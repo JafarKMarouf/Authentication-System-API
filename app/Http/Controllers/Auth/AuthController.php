@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Enums\TokenAbility;
 use App\Exceptions\CustomeException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginUserRequest;
@@ -9,7 +10,9 @@ use App\Http\Requests\StoreUserRequest;
 use App\Models\User;
 use App\Services\LoginUserAction;
 use App\Services\StoreUserAction;
+use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 
 class AuthController extends Controller
@@ -59,6 +62,21 @@ class AuthController extends Controller
         return response()->json([
             'status' => true,
             'message' => 'User is logged out successfully'
+        ], 200);
+    }
+
+    public function refreshToken(Request $request): JsonResponse
+    {
+        $accessToken = $request->user()->createToken(
+            'access_token',
+            [TokenAbility::ACCESS_API->value],
+            config('sanctum.expiration')
+        )->plainTextToken;
+
+        return response()->json([
+            'status' => true,
+            'access_token' => $accessToken,
+            'message' => 'Token created'
         ], 200);
     }
 }

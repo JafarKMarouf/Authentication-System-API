@@ -28,8 +28,8 @@ class VerifyTwoFactoryAuthAction
         $user = User::where('email', $email)->first();
 
         $token = $user->createToken('token-name')->plainTextToken;
-        $data['token'] = $token;
         $data['user'] = $user;
+        $data['token'] = $token;
         return $data;
     }
 }

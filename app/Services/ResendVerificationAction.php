@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Cache;
 /**
  * Class SendOtpAction.
  */
-class ResendCodeAction
+class ResendVerificationAction
 {
     use SaveOtpInCache;
 

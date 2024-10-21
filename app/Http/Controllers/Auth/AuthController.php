@@ -70,7 +70,7 @@ class AuthController extends Controller
         $accessToken = $request->user()->createToken(
             'access_token',
             [TokenAbility::ACCESS_API->value],
-            config('sanctum.expiration')
+            Carbon::now()->addMinutes(config('sanctum.expiration') * 20)
         )->plainTextToken;
 
         return response()->json([

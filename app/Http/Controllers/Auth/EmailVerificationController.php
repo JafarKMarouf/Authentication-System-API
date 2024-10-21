@@ -6,13 +6,13 @@ use App\Exceptions\CustomeException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\EmailVerificationRequest;
 use App\Services\EmailVerificationAction;
-use App\Services\ResendCodeAction;
+use App\Services\ResendVerificationAction;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class EmailVerificationController extends Controller
 {
-    public function resendCode(Request $request, ResendCodeAction $action): JsonResponse
+    public function resendCode(Request $request, ResendVerificationAction $action): JsonResponse
     {
         try {
             $action->execute($request);

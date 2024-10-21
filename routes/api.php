@@ -33,6 +33,7 @@ Route::group(['prefix'  => 'auth'], function () {
                     ->middleware('ability:' . TokenAbility::ISSUE_ACCESS_TOKEN->value)
                     ->name('refreshToken');
             });
+            // Route::get('/test', 'test');
         });
 
     Route::controller(EmailVerificationController::class)

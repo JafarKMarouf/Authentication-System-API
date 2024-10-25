@@ -64,19 +64,4 @@ class AuthController extends Controller
             'message' => 'User is logged out successfully'
         ], 200);
     }
-
-    public function refreshToken(Request $request): JsonResponse
-    {
-        $accessToken = $request->user()->createToken(
-            'access_token',
-            [TokenAbility::ACCESS_API->value],
-            Carbon::now()->addMinutes(config('sanctum.expiration') * 20)
-        )->plainTextToken;
-
-        return response()->json([
-            'status' => true,
-            'access_token' => $accessToken,
-            'message' => 'Token created'
-        ], 200);
-    }
 }

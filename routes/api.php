@@ -4,6 +4,7 @@ use App\Enums\TokenAbility;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\EmailVerificationController;
 use App\Http\Controllers\Auth\ForgetPasswordController;
+use App\Http\Controllers\Auth\RefreshTokenController;
 use App\Http\Controllers\Auth\TwoFactoryAuthenticationController;
 use Illuminate\Support\Facades\Route;
 
@@ -22,17 +23,22 @@ Route::group(['prefix'  => 'auth'], function () {
 
     Route::controller(AuthController::class)
         ->group(function () {
-            Route::post('register', 'register')->name('register');
-            Route::post('login', 'login')->name('login');
+            Route::post('register', 'register')
+                ->name('register');
+            Route::post('login', 'login')
+                ->name('login');
+            Route::get('logout', 'logout')
+                ->middleware('auth:sanctum')
+                ->name('logout');
+        });
 
-            Route::middleware('auth:sanctum')->group(function () {
-                Route::get('logout', 'logout')
-                    ->name('logout');
-
-                Route::get('refresh-token', 'refreshToken')
-                    ->middleware('ability:' . TokenAbility::ISSUE_ACCESS_TOKEN->value)
-                    ->name('refreshToken');
-            });
+    Route::controller(RefreshTokenController::class)
+        ->group(function () {
+            Route::get('refresh-token', 'refreshToken')
+                ->middleware([
+                    'auth:sanctum',
+                    'ability:' . TokenAbility::ISSUE_ACCESS_TOKEN->value
+                ])->name('refreshToken');
         });
 
     Route::controller(EmailVerificationController::class)

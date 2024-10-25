@@ -46,6 +46,7 @@ class StoreUserAction
             [TokenAbility::ACCESS_API->value],
             Carbon::now()->addMinutes(config('sanctum.expiration'))
         )->plainTextToken;
+
         $data['refreshToken'] = $user->createToken(
             'refresh_token',
             [TokenAbility::ISSUE_ACCESS_TOKEN->value],

@@ -9,9 +9,13 @@ use App\Services\EmailVerificationAction;
 use App\Services\ResendVerificationAction;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Psr\SimpleCache\InvalidArgumentException;
 
 class EmailVerificationController extends Controller
 {
+    /**
+     * @throws InvalidArgumentException
+     */
     public function resendCode(Request $request, ResendVerificationAction $action): JsonResponse
     {
         try {

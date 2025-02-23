@@ -10,6 +10,7 @@ use App\Services\ForgetPasswordAction;
 use App\Services\ResetPasswordAction;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Psr\SimpleCache\InvalidArgumentException;
 
 class ForgetPasswordController extends Controller
 {
@@ -30,7 +31,10 @@ class ForgetPasswordController extends Controller
         }
     }
 
-    public function resetPassword(ResetPasswordRequest $request, ResetPasswordAction $action)
+    /**
+     * @throws InvalidArgumentException
+     */
+    public function resetPassword(ResetPasswordRequest $request, ResetPasswordAction $action): JsonResponse
     {
         try {
             $request->validated();

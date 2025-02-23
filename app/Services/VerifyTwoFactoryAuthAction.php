@@ -4,15 +4,19 @@ namespace App\Services;
 
 use App\Exceptions\CustomeException;
 use App\Models\User;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Psr\SimpleCache\InvalidArgumentException;
 
 /**
  * Class TwoFactoryAuthAction.
  */
 class VerifyTwoFactoryAuthAction
 {
-    public function execute(Request $request)
+    /**
+     * @throws InvalidArgumentException
+     * @throws CustomeException
+     */
+    public function execute($request): array
     {
         $cache = Cache::store('database');
 
@@ -25,7 +29,7 @@ class VerifyTwoFactoryAuthAction
 
         $cache->forget($request->ip());
 
-        $user = User::where('email', $email)->first();
+        $user = User::query()->where('email', $email)->first();
 
         $token = $user->createToken('token-name')->plainTextToken;
         $data['user'] = $user;

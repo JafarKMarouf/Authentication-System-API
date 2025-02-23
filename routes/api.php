@@ -20,9 +20,7 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::group(['prefix'  => 'auth'], function () {
-
-    Route::controller(AuthController::class)
-        ->group(function () {
+    Route::controller(AuthController::class)->group(function () {
             Route::post('register', 'register')
                 ->name('register');
             Route::post('login', 'login')
@@ -43,7 +41,7 @@ Route::group(['prefix'  => 'auth'], function () {
 
     Route::controller(EmailVerificationController::class)
         ->group(function () {
-            Route::post('verify-email', 'verifyEmail')->name('verificationcode');
+            Route::post('verify-email', 'verifyEmail')->name('verifyEmail');
             Route::post('resend-code', 'resendCode')
                 ->middleware(['throttle:tenMinutes'])
                 ->name('sendCode');
@@ -51,13 +49,13 @@ Route::group(['prefix'  => 'auth'], function () {
 
     Route::controller(TwoFactoryAuthenticationController::class)
         ->group(function () {
-            Route::post('verify-2FA', 'verify2FAOTP')->name('verify2FAOTP');
-            Route::post('resend-2FA', 'resend2FAOTP')->name('resend2FAOTP');
+            Route::post('verify-2FA', 'verify2FaOtp')->name('verify2FaOtp');
+            Route::post('resend-2FA', 'resend2FaOtp')->name('resend2FaOtp');
         });
 
     Route::controller(ForgetPasswordController::class)
         ->group(function () {
-            Route::post('forgetpassword', 'forgetPassword')->name('forget password');
-            Route::post('resetpassword', 'resetPassword')->name('reset password');
+            Route::post('forget-password', 'forgetPassword')->name('forget password');
+            Route::post('reset-password', 'resetPassword')->name('reset password');
         });
 });

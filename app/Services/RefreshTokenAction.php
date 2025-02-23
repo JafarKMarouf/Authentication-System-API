@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\Auth;
  */
 class RefreshTokenAction
 {
-    public function exceute(Request $request)
+    public function execute(Request $request): array
     {
         $request->user()->tokens()->delete();
         $accessToken = $request->user()->createToken(

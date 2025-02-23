@@ -3,11 +3,13 @@
 namespace App\Services;
 
 use App\Exceptions\CustomeException;
+use App\Jobs\TwoFactoryAuthenticationNotificationJob;
 use App\Models\User;
 use App\Notifications\TwoFactoryAuthenticationNotification;
 use App\Traits\SaveOtpInCache;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Psr\SimpleCache\InvalidArgumentException;
 
 /**
  * Class ResendCodeTwoFactoryAuthAction.
@@ -15,7 +17,12 @@ use Illuminate\Support\Facades\Cache;
 class ResendCodeTwoFactoryAuthAction
 {
     use SaveOtpInCache;
-    public function execute(Request $request)
+
+    /**
+     * @throws InvalidArgumentException
+     * @throws CustomeException
+     */
+    public function execute(Request $request): void
     {
         $cache = Cache::store('database');
         $email = $cache->get($request->ip())[1] ?? null;
@@ -24,12 +31,12 @@ class ResendCodeTwoFactoryAuthAction
             throw new CustomeException('User for this email is not found', 404);
         }
 
-        $user = User::where('email', $email)->first();
+        $user = User::query()->where('email', $email)->first();
 
 
         $cache->forget($request->ip());
-        $OTP2FA = $this->saveOtpInCache($request, $email);
+        $otp2FA = $this->saveOtpInCache($request, $email);
 
-        $user->notify(new TwoFactoryAuthenticationNotification($OTP2FA));
+        dispatch(new TwoFactoryAuthenticationNotificationJob($user, $otp2FA));
     }
 }

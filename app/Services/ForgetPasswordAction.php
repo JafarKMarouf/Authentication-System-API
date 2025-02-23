@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Jobs\ResetPasswordJob;
 use App\Models\User;
 use App\Notifications\ResetPasswordNotification;
 use App\Traits\SaveOtpInCache;
@@ -16,11 +17,12 @@ class ForgetPasswordAction
 
     public function execute(Request $request)
     {
-        $user = User::where('email', $request->email)->first();
+        $user = User::query()->where('email', $request->email)->first();
 
         $otp = $this->saveOtpInCache($request, $user->email, 10);
 
-        $user->notify(new ResetPasswordNotification($otp));
+        dispatch(new ResetPasswordJob($user, $otp));
+
         return $otp;
     }
 }

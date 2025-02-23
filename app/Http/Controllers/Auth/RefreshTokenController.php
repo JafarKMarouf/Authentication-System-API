@@ -13,7 +13,7 @@ class RefreshTokenController extends Controller
     public function refreshToken(Request $request, RefreshTokenAction $refreshTokenAction): JsonResponse
     {
         try {
-            $data =  $refreshTokenAction->exceute($request);
+            $data =  $refreshTokenAction->execute($request);
             return response()->json([
                 'status' => true,
                 'data' => $data,

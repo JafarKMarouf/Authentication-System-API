@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Enums\TokenAbility;
 use App\Exceptions\CustomeException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginUserRequest;
@@ -10,7 +9,6 @@ use App\Http\Requests\StoreUserRequest;
 use App\Models\User;
 use App\Services\LoginUserAction;
 use App\Services\StoreUserAction;
-use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -25,7 +23,7 @@ class AuthController extends Controller
             return response()->json([
                 'status' => true,
                 'data' => $data,
-                'message' => 'User created successfully and Send Verfiy Code'
+                'message' => 'User created successfully and Send Verify Code'
             ], 201);
         } catch (CustomeException $e) {
             return response()->json([
@@ -55,10 +53,9 @@ class AuthController extends Controller
 
     public function logout(): JsonResponse
     {
-        $user = auth()->user();
+        $user = request()->user();
         Cache::store('database')->forget("user_ {$user->email}");
-
-        User::find($user->id)->tokens()->delete();
+        $user->tokens()->delete();
         return response()->json([
             'status' => true,
             'message' => 'User is logged out successfully'

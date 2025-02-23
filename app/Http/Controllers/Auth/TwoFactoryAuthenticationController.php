@@ -9,10 +9,14 @@ use App\Services\ResendCodeTwoFactoryAuthAction;
 use App\Services\VerifyTwoFactoryAuthAction;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Psr\SimpleCache\InvalidArgumentException;
 
 class TwoFactoryAuthenticationController extends Controller
 {
-    public function verify2FAOTP(_2FARequest $request, VerifyTwoFactoryAuthAction $action): JsonResponse
+    /**
+     * @throws InvalidArgumentException
+     */
+    public function verify2FaOtp(_2FARequest $request, VerifyTwoFactoryAuthAction $action): JsonResponse
     {
         try {
             $request->validated();
@@ -30,7 +34,10 @@ class TwoFactoryAuthenticationController extends Controller
         }
     }
 
-    public function resend2FAOTP(Request $request, ResendCodeTwoFactoryAuthAction $action): JsonResponse
+    /**
+     * @throws InvalidArgumentException
+     */
+    public function resend2FaOtp(Request $request, ResendCodeTwoFactoryAuthAction $action): JsonResponse
     {
         try {
             $action->execute($request);

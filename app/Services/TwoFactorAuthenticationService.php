@@ -2,10 +2,12 @@
 
 namespace App\Services;
 
+use App\Enums\TokenAbility;
 use App\Exceptions\CustomeException;
 use App\Jobs\TwoFactoryAuthenticationJob;
 use App\Models\User;
 use App\Traits\SaveOtpInCache;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Psr\SimpleCache\InvalidArgumentException;
 
@@ -27,14 +29,23 @@ class TwoFactorAuthenticationService
         if ($otp != $request->otp) {
             throw new CustomeException('OTP is invalid', 401);
         }
-
         $cache->forget($request->ip());
 
         $user = User::query()->where('email', $email)->first();
 
-        $token = $user->createToken('token-name')->plainTextToken;
         $data['user'] = $user;
-        $data['token'] = $token;
+        $data['accessToken'] = $user->createToken(
+            'access_token',
+            [TokenAbility::ACCESS_API->value],
+            Carbon::now()->addMinutes(config('sanctum.expiration'))
+        )->plainTextToken;
+
+        $data['refreshToken'] = $user->createToken(
+            'refresh_token',
+            [TokenAbility::ISSUE_ACCESS_TOKEN->value],
+            Carbon::now()->addMinutes(config('sanctum.rt_expiration'))
+        )->plainTextToken;
+
         return $data;
     }
 

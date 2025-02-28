@@ -30,7 +30,7 @@ Route::group(['prefix'  => 'auth'], function () {
         Route::middleware([
             'auth:sanctum',
             'ability:' . TokenAbility::ISSUE_ACCESS_TOKEN->value
-        ])->get('refresh-token', 'refreshToken')->name('refreshToken');
+        ])->post('refresh-token', 'refreshToken')->name('refreshToken');
     });
 
     Route::controller(EmailVerificationController::class)->group(function () {

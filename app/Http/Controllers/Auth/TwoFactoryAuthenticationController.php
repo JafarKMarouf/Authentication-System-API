@@ -5,22 +5,23 @@ namespace App\Http\Controllers\Auth;
 use App\Exceptions\CustomeException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\_2FARequest;
-use App\Services\ResendCodeTwoFactoryAuthAction;
-use App\Services\VerifyTwoFactoryAuthAction;
+use App\Services\TwoFactorAuthenticationService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Psr\SimpleCache\InvalidArgumentException;
 
 class TwoFactoryAuthenticationController extends Controller
 {
+    public function __construct(private readonly TwoFactorAuthenticationService $twoFactorAuthenticationService){}
+
     /**
      * @throws InvalidArgumentException
      */
-    public function verify2FaOtp(_2FARequest $request, VerifyTwoFactoryAuthAction $action): JsonResponse
+    public function verify2FAOtp(_2FARequest $request): JsonResponse
     {
         try {
             $request->validated();
-            $data = $action->execute($request);
+            $data = $this->twoFactorAuthenticationService->verify($request);
             return response()->json([
                 'status' => true,
                 'data' => $data,
@@ -37,10 +38,10 @@ class TwoFactoryAuthenticationController extends Controller
     /**
      * @throws InvalidArgumentException
      */
-    public function resend2FaOtp(Request $request, ResendCodeTwoFactoryAuthAction $action): JsonResponse
+    public function resend2FAOtp(Request $request): JsonResponse
     {
         try {
-            $action->execute($request);
+            $this->twoFactorAuthenticationService->resendCode($request);
             return response()->json([
                 'status' => true,
                 'message' => 'Resent Code OTP Successfully for enable 2FA'

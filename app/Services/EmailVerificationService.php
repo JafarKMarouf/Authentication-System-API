@@ -3,23 +3,21 @@
 namespace App\Services;
 
 use App\Exceptions\CustomeException;
+use App\Jobs\ResendVerificationJob;
 use App\Models\User;
-use Ichtrojan\Otp\Otp;
-use Illuminate\Http\Request;
+use App\Traits\SaveOtpInCache;
 use Illuminate\Support\Facades\Cache;
 use Psr\SimpleCache\InvalidArgumentException;
 
-/**
- * Class VerifyEmailAction.
- */
-class EmailVerificationAction
+class EmailVerificationService
 {
+    use SaveOtpInCache;
 
     /**
      * @throws InvalidArgumentException
      * @throws CustomeException
      */
-    public function execute(Request $request): int
+    public function verify($request): int
     {
         $cache = Cache::store('database');
 
@@ -35,7 +33,25 @@ class EmailVerificationAction
         ]);
 
         $cache->forget($request->ip());
-
         return $user;
+    }
+
+    /**
+     * @throws InvalidArgumentException
+     * @throws CustomeException
+     */
+    public function resend($request): void{
+        $cache = Cache::store('database');
+        $email = $cache->get($request->ip())[1] ?? null;
+
+        if (!$email) {
+            throw new CustomeException('User for this email is not found', 404);
+        }
+
+        $user = User::query()->where('email', $email)->first();
+
+        $otp = $this->saveOtpInCache($request, $email);
+
+        dispatch(new ResendVerificationJob($user, $otp));
     }
 }

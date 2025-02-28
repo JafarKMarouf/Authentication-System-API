@@ -23,7 +23,7 @@ class StoreUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'username' => 'required|string',
+            'username' => 'required|string|min:4',
             'email' => 'required|email|unique:users,email',
             'phone_number' => 'required|digits:10|unique:users,phone_number|regex:/^([0-9\s\-\+\(\)]*)$/',
             'password' => 'required|string|confirmed|min:6',

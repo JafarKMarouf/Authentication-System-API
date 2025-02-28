@@ -6,20 +6,18 @@ use App\Exceptions\CustomeException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\LoginUserRequest;
 use App\Http\Requests\StoreUserRequest;
-use App\Models\User;
-use App\Services\LoginUserAction;
-use App\Services\StoreUserAction;
+use App\Services\AuthenticatedService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
 
-class AuthController extends Controller
+class AuthenticatedController extends Controller
 {
-    public function register(StoreUserRequest $request, StoreUserAction $storeUserAction): JsonResponse
+    public function __construct(private readonly AuthenticatedService $authService){}
+
+    public function register(StoreUserRequest $request): JsonResponse
     {
         try {
             $request->validated();
-            $data =  $storeUserAction->execute($request);
+            $data =  $this->authService->storeUser($request);
             return response()->json([
                 'status' => true,
                 'data' => $data,
@@ -33,11 +31,11 @@ class AuthController extends Controller
         }
     }
 
-    public function login(LoginUserRequest $request, LoginUserAction $loginUserAction): JsonResponse
+    public function login(LoginUserRequest $request): JsonResponse
     {
         try {
             $request->validated();
-            $data =  $loginUserAction->execute($request);
+            $data =  $this->authService->loginUser($request);
             return response()->json([
                 'status' => true,
                 'data' => $data,
@@ -53,9 +51,7 @@ class AuthController extends Controller
 
     public function logout(): JsonResponse
     {
-        $user = request()->user();
-        Cache::store('database')->forget("user_ {$user->email}");
-        $user->tokens()->delete();
+        $this->authService->logoutUser();
         return response()->json([
             'status' => true,
             'message' => 'User is logged out successfully'

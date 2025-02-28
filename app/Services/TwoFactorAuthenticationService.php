@@ -3,20 +3,21 @@
 namespace App\Services;
 
 use App\Exceptions\CustomeException;
+use App\Jobs\TwoFactoryAuthenticationJob;
 use App\Models\User;
+use App\Traits\SaveOtpInCache;
 use Illuminate\Support\Facades\Cache;
 use Psr\SimpleCache\InvalidArgumentException;
 
-/**
- * Class TwoFactoryAuthAction.
- */
-class VerifyTwoFactoryAuthAction
+class TwoFactorAuthenticationService
 {
+    use SaveOtpInCache;
+
     /**
      * @throws InvalidArgumentException
      * @throws CustomeException
      */
-    public function execute($request): array
+    public function verify($request): array
     {
         $cache = Cache::store('database');
 
@@ -35,5 +36,25 @@ class VerifyTwoFactoryAuthAction
         $data['user'] = $user;
         $data['token'] = $token;
         return $data;
+    }
+
+    /**
+     * @throws InvalidArgumentException
+     * @throws CustomeException
+     * @throws \Exception
+     */
+    public function resendCode($request):void{
+        $cache = Cache::store('database');
+        $email = $cache->get($request->ip())[1] ?? null;
+        if (!$email) {
+            throw new CustomeException('User for this email is not found', 404);
+        }
+
+        $user = User::query()->where('email', $email)->first();
+
+        $cache->forget(request()->ip());
+        $otp2FA = $this->saveOtpInCache(request(), $email);
+
+        dispatch(new TwoFactoryAuthenticationJob($user, $otp2FA));
     }
 }

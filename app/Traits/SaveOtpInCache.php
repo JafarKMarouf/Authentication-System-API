@@ -2,12 +2,16 @@
 
 namespace App\Traits;
 
+use Exception;
 use Ichtrojan\Otp\Otp;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 
 trait SaveOtpInCache
 {
+    /**
+     * @throws Exception
+     */
     public function saveOtpInCache(Request $request, $email, $validate = 3)
     {
         $otp = new Otp;

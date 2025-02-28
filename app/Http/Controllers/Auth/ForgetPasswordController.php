@@ -6,19 +6,19 @@ use App\Exceptions\CustomeException;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ForgetPasswordRequest;
 use App\Http\Requests\ResetPasswordRequest;
-use App\Services\ForgetPasswordAction;
-use App\Services\ResetPasswordAction;
+use App\Services\ForgetPasswordService;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Psr\SimpleCache\InvalidArgumentException;
 
 class ForgetPasswordController extends Controller
 {
-    public function forgetPassword(ForgetPasswordRequest $request, ForgetPasswordAction $action): JsonResponse
+    public function __construct(private readonly ForgetPasswordService $forgetPasswordService){}
+
+    public function forgetPassword(ForgetPasswordRequest $request): JsonResponse
     {
         try {
             $request->validated();
-            $action->execute($request);
+            $this->forgetPasswordService->forgetPassword($request);
             return response()->json([
                 'status' => true,
                 'message' => 'sent code to your email for reset password'
@@ -34,11 +34,11 @@ class ForgetPasswordController extends Controller
     /**
      * @throws InvalidArgumentException
      */
-    public function resetPassword(ResetPasswordRequest $request, ResetPasswordAction $action): JsonResponse
+    public function resetPassword(ResetPasswordRequest $request): JsonResponse
     {
         try {
             $request->validated();
-            $action->execute($request);
+            $this->forgetPasswordService->resetPassword($request);
             return response()->json([
                 'status' => true,
                 'message' => 'Your password has been reset'

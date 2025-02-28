@@ -4,16 +4,18 @@ namespace App\Http\Controllers\Auth;
 
 use App\Exceptions\CustomeException;
 use App\Http\Controllers\Controller;
-use App\Services\RefreshTokenAction;
+use App\Services\RefreshTokenService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class RefreshTokenController extends Controller
 {
-    public function refreshToken(Request $request, RefreshTokenAction $refreshTokenAction): JsonResponse
+    public function __construct(private readonly RefreshTokenService $service){}
+
+    public function refreshToken(): JsonResponse
     {
         try {
-            $data =  $refreshTokenAction->execute($request);
+            $data =  $this->service->createRefreshToken();
             return response()->json([
                 'status' => true,
                 'data' => $data,

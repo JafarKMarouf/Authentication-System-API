@@ -26,13 +26,12 @@ class DeleteExpiredTokens extends Command
     /**
      * Execute the console command.
      */
-    public function handle()
+    public function handle(): void
     {
         $threeDayAfterExpired  = Carbon::now()->subDays(3);
         $deleteExpiredToken = DB::table('personal_access_tokens')
             ->where('expires_at', '<', $threeDayAfterExpired)
             ->delete();
-
         $this->info("Deleted Access and Refresh Tokens: $deleteExpiredToken");
     }
 }
